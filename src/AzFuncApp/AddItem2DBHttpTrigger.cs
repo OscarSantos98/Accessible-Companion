@@ -33,16 +33,17 @@ namespace Company.Function
                 string y = req.Query[$"y{i}"];
                 coordinates.Add(x);
                 coordinates.Add(y);
-                coordinatesDict.Add($"x{i}", float.Parse(x, CultureInfo.InvariantCulture.NumberFormat));
-                coordinatesDict.Add($"y{i}", float.Parse(y, CultureInfo.InvariantCulture.NumberFormat));
+
+                if (!string.IsNullOrEmpty(x) && !string.IsNullOrEmpty(y))
+                {
+                    coordinatesDict.Add($"x{i}", float.Parse(x, CultureInfo.InvariantCulture.NumberFormat));
+                    coordinatesDict.Add($"y{i}", float.Parse(y, CultureInfo.InvariantCulture.NumberFormat));
+                }
 
             }
 
-            string name = req.Query["name"];
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            // dynamic data = JsonConvert.DeserializeObject(requestBody);
 
             string msg = null; // when everything works fine this value remains in null
             foreach (string coordinate in coordinates)
@@ -62,17 +63,6 @@ namespace Company.Function
                     // create a random ID
                     id = System.Guid.NewGuid().ToString(),
                     coordinates = coordinatesDict
-                });
-            }
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                // Add a JSON document to the output container.
-                await documentsOut.AddAsync(new
-                {
-                    // create a random ID
-                    id = System.Guid.NewGuid().ToString(),
-                    name = name
                 });
             }
 
